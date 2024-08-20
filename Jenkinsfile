@@ -1,10 +1,3 @@
-properties([
-    parameters([
-        string(defaultValue: 'dev', name: 'Environment'),
-        choice(choices: ['plan', 'apply', 'destroy'], name: 'Terraform_Action')
-    ])
-])
-
 pipeline {
     agent any
     stages {
@@ -24,9 +17,7 @@ pipeline {
                     script {
                         try {
                             echo 'Initializing Terraform...'
-                            retry(2) { // retry logic for robustness
-                                sh 'terraform -chdir=eks/ init -reconfigure'
-                            }
+                            sh 'terraform -chdir=eks/ init -migrate-state'
                         } catch (Exception e) {
                             error "Terraform Init failed: ${e.message}"
                         }
